@@ -4,7 +4,7 @@ const people = [
   { name: "Sumedh Navuda", url: "https://www.linkedin.com/in/sumedhnavuda/" },
   { name: "Vikas Salian", url: "https://www.linkedin.com/in/vikas-salian/" },
   { name: "Sudharshan", url: "https://www.linkedin.com/in/sudharshan/" },
-  { name: "Swathik", url: "http://linkedin.com/in/swasthik-k-710667274" },
+  { name: "Swasthik", url: "http://linkedin.com/in/swasthik-k-710667274" },
 ];
 
 const guide = { name: "Ragavendra Sir", url: "https://www.linkedin.com/in/raghavendra/" };

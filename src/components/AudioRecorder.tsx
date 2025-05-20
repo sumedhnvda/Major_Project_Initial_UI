@@ -14,14 +14,11 @@ const AudioRecorder = ({ onRecordingComplete }: AudioRecorderProps) => {
     setIsRecording(true);
     setRecordingTime(0);
     
-    // Start timer
     const id = window.setInterval(() => {
       setRecordingTime(prev => prev + 1);
     }, 1000);
     setTimerId(id as unknown as number);
 
-    // In a real implementation, you would start actual audio recording here
-    // For now, this is just a UI demonstration
   };
 
   const stopRecording = () => {
