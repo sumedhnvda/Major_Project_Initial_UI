@@ -34,11 +34,12 @@ useEffect(() => {
   const handleRecordingComplete = (recording: Blob) => {
   // Simulate a transcript for demo purposes
   const simulatedTranscript = "ಉಂದು ನಿಕ್ಲೆನ ಧ್ವನಿ ಇನ್ಪುಟ್ ದ ಒಂಜಿ ಅನುಕರಣೆದ ಪ್ರತಿಲಿಪಿ";
-  setUserTranscript(simulatedTranscript); // Show transcript in UI
+  setUserTranscript(simulatedTranscript);
+ // Show transcript in UI
 
   setTimeout(() => {
     setAiActive(true);
-    setAiResponse("ನಿಕ್ಲೆನ ಸ್ವರೊದ ಇನ್ಪುಟ್ ಡ್ದ್ ಎಂಕ್ ಅರ್ಥ ಆಯಿನವು ಉಂದು. ಒಂಜಿ ನಿಜವಾದ್ ಅನುಷ್ಠಾನೊಡು, ಉಂದು ನಿಕ್ಲೆನ ಪಾತೆರೊದ ನಿಜವಾದ್ ಪ್ರತಿಲೇಖನ ಆಪುಂಡು.");
+    setAiResponse(`ನಿಕ್ಲೆನ ಸಂದೇಶೊಗು ಉಂದು ಒಂಜಿ ಅನುಕರಣೆದ ಪ್ರತಿಕ್ರಿಯೆ:: "${simulatedTranscript}". ಒಂಜಿ ನಿಜವಾದ್ ಅಪ್ಲಿಕೇಶನ್ ಡ್, ಉಂದು ಎಐ-ಜನರೇಟೆಡ್ ರೆಸ್ಪಾನ್ಸ್ ಆಪುಂಡು.`);
     setIsPlaying(true);
     // Restrict animation bubble to 5 seconds
     setTimeout(() => {
