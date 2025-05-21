@@ -32,16 +32,19 @@ useEffect(() => {
 }, []);
 
   const handleRecordingComplete = (recording: Blob) => {
-    setUserTranscript("");
+  // Simulate a transcript for demo purposes
+  const simulatedTranscript = "ಉಂದು ನಿಕ್ಲೆನ ಧ್ವನಿ ಇನ್ಪುಟ್ ದ ಒಂಜಿ ಅನುಕರಣೆದ ಪ್ರತಿಲಿಪಿ";
+  setUserTranscript(simulatedTranscript); // Show transcript in UI
+
+  setTimeout(() => {
+    setAiActive(true);
+    setAiResponse("ನಿಕ್ಲೆನ ಸ್ವರೊದ ಇನ್ಪುಟ್ ಡ್ದ್ ಎಂಕ್ ಅರ್ಥ ಆಯಿನವು ಉಂದು. ಒಂಜಿ ನಿಜವಾದ್ ಅನುಷ್ಠಾನೊಡು, ಉಂದು ನಿಕ್ಲೆನ ಪಾತೆರೊದ ನಿಜವಾದ್ ಪ್ರತಿಲೇಖನ ಆಪುಂಡು.");
+    setIsPlaying(true);
+    // Restrict animation bubble to 5 seconds
     setTimeout(() => {
-      setAiActive(true);
-      setAiResponse("ನಿಕ್ಲೆನ ಸ್ವರೊದ ಇನ್ಪುಟ್ ಡ್ದ್ ಎಂಕ್ ಅರ್ಥ ಆಯಿನವು ಉಂದು. ಒಂಜಿ ನಿಜವಾದ್ ಅನುಷ್ಠಾನೊಡು, ಉಂದು ನಿಕ್ಲೆನ ಪಾತೆರೊದ ನಿಜವಾದ್ ಪ್ರತಿಲೇಖನ ಆಪುಂಡು.");
-      setIsPlaying(true);
-      // Restrict animation bubble to 5 seconds
-      setTimeout(() => {
-        setIsPlaying(false);
-      }, 5000);
-    }, 1500);
+      setIsPlaying(false);
+    }, 5000);
+  }, 1500);
   };
 
   const handleSendMessage = (message: string) => {
