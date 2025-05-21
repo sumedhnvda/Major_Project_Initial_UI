@@ -7,7 +7,7 @@ const people = [
   { name: "Swasthik", url: "http://linkedin.com/in/swasthik-k-710667274" },
 ];
 
-const guide = { name: "Ragavendra Sir", url: "https://www.linkedin.com/in/raghavendra/" };
+const guide = { name: "Mr Ragavendra GS", url: "https://www.linkedin.com/in/raghavendra-g-s-70a0b1288/?trk=contact-info" };
 
 const Footer = () => {
   return (

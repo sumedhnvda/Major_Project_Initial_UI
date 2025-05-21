@@ -32,10 +32,10 @@ useEffect(() => {
 }, []);
 
   const handleRecordingComplete = (recording: Blob) => {
-    setUserTranscript("This is what I understood from your voice input. In a real implementation, this would be the actual transcription of your speech.");
+    setUserTranscript("");
     setTimeout(() => {
       setAiActive(true);
-      setAiResponse("This is a simulated response from the Tulu language AI. In a real application, this would be the transcribed and processed audio response from your model.");
+      setAiResponse("ನಿಕ್ಲೆನ ಸ್ವರೊದ ಇನ್ಪುಟ್ ಡ್ದ್ ಎಂಕ್ ಅರ್ಥ ಆಯಿನವು ಉಂದು. ಒಂಜಿ ನಿಜವಾದ್ ಅನುಷ್ಠಾನೊಡು, ಉಂದು ನಿಕ್ಲೆನ ಪಾತೆರೊದ ನಿಜವಾದ್ ಪ್ರತಿಲೇಖನ ಆಪುಂಡು.");
       setIsPlaying(true);
       // Restrict animation bubble to 5 seconds
       setTimeout(() => {
@@ -48,7 +48,7 @@ useEffect(() => {
     setUserTranscript(message);
     setTimeout(() => {
       setAiActive(true);
-      setAiResponse(`This is a simulated response to your message: "${message}". In a real application, this would be the AI-generated response.`);
+      setAiResponse(`ನಿಕ್ಲೆನ ಸಂದೇಶೊಗು ಉಂದು ಒಂಜಿ ಅನುಕರಣೆದ ಪ್ರತಿಕ್ರಿಯೆ:: "${message}". ಒಂಜಿ ನಿಜವಾದ್ ಅಪ್ಲಿಕೇಶನ್ ಡ್, ಉಂದು ಎಐ-ಜನರೇಟೆಡ್ ರೆಸ್ಪಾನ್ಸ್ ಆಪುಂಡು.`);
       setIsPlaying(true);
       // Restrict animation bubble to 5 seconds
       setTimeout(() => {
