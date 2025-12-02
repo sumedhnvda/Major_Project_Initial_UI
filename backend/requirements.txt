@@ -4,3 +4,6 @@ motor
 pydantic
 python-multipart
 python-dotenv
+pytesseract
+pdf2image
+tqdm
