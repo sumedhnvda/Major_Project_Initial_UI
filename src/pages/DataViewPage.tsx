@@ -45,7 +45,7 @@ const DataViewPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/data`);
+                const response = await axios.get(`https://saraswati-b52q.onrender.com/api/data`);
                 setData(response.data);
             } catch (err) {
                 setError('Failed to load data. Please make sure the backend is running.');
@@ -60,7 +60,7 @@ const DataViewPage = () => {
     const fetchBooks = async () => {
         setLoadingBooks(true);
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books`);
+            const response = await axios.get(`https://saraswati-b52q.onrender.com/api/books`);
             setBooks(response.data);
         } catch (error) {
             console.error("Error fetching books:", error);
@@ -83,7 +83,7 @@ const DataViewPage = () => {
         setSelectedBook(book);
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books/${book._id}`);
+            const response = await axios.get(`https://saraswati-b52q.onrender.com/api/books/${book._id}`);
             setSelectedBook(response.data);
         } catch (error) {
             console.error("Error fetching book content:", error);
