@@ -1,7 +1,7 @@
 import React from 'react';
-import { MessageSquare, Globe,  BookAIcon, Workflow,  GroupIcon, DatabaseIcon } from 'lucide-react';
+import { MessageSquare, Globe, BookAIcon, Workflow, GroupIcon, DatabaseIcon } from 'lucide-react';
 
-const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: React.ReactNode }) => (
   <div className="bg-white rounded-xl shadow-sm p-6 transition-all hover:shadow-md">
     <div className="w-12 h-12 bg-light-red-100 rounded-full flex items-center justify-center mb-4">
       {icon}
@@ -43,15 +43,15 @@ const FeaturesSection = () => {
       title: "Creation of High-Quality Datasets",
       description: (
         <ul className="list-disc list-inside text-gray-600 space-y-1">
-            Custom Tulu datasets created for:
-            <ul className="list-disc list-inside ml-5">
-              <li>Finetuning on general-purpose Q&A tasks</li>
-              <li>Finetuning ASR (Speech-to-Text) models</li>
-              <li>Finetuning TTS (Text-to-Speech) models</li>
-            </ul>    
+          Custom Tulu datasets created for:
+          <ul className="list-disc list-inside ml-5">
+            <li>Finetuning on general-purpose Q&A tasks</li>
+            <li>Preserving cultural narratives and folklore</li>
+            <li>Enhancing linguistic accuracy in digital formats</li>
+          </ul>
         </ul>
       )
-    } 
+    }
   ];
 
   return (
@@ -60,14 +60,14 @@ const FeaturesSection = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Features</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Our advanced AI model provides a range of capabilities designed to make voice and text 
+            Our advanced AI model provides a range of capabilities designed to make voice and text
             interactions natural and efficient.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <FeatureCard 
+            <FeatureCard
               key={index}
               icon={feature.icon}
               title={feature.title}

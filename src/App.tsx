@@ -1,21 +1,26 @@
-import React from 'react';
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import DemoSection from './components/DemoSection';
-import FeaturesSection from './components/FeaturesSection';
 import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import ContributePage from './pages/ContributePage';
+import DataViewPage from './pages/DataViewPage';
 
 function App() {
   return (
-    <div className="min-h-screen bg-cream-100">
-      <Header />
-      <main>
-        <Hero />
-        <DemoSection />
-        <FeaturesSection />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen bg-cream-100 flex flex-col">
+        <Header />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/contribute" element={<ContributePage />} />
+            <Route path="/data" element={<DataViewPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
