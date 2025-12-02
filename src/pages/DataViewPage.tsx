@@ -45,7 +45,7 @@ const DataViewPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/data');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/data`);
                 setData(response.data);
             } catch (err) {
                 setError('Failed to load data. Please make sure the backend is running.');
@@ -60,7 +60,7 @@ const DataViewPage = () => {
     const fetchBooks = async () => {
         setLoadingBooks(true);
         try {
-            const response = await axios.get('http://localhost:8000/api/books');
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books`);
             setBooks(response.data);
         } catch (error) {
             console.error("Error fetching books:", error);
@@ -83,7 +83,7 @@ const DataViewPage = () => {
         setSelectedBook(book);
 
         try {
-            const response = await axios.get(`http://localhost:8000/api/books/${book._id}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books/${book._id}`);
             setSelectedBook(response.data);
         } catch (error) {
             console.error("Error fetching book content:", error);
@@ -114,8 +114,8 @@ const DataViewPage = () => {
                             <button
                                 onClick={() => setViewType('qa')}
                                 className={`px-6 py-2 rounded-lg font-medium transition-all ${viewType === 'qa'
-                                        ? 'bg-light-red-500 text-white shadow-md'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-light-red-500 text-white shadow-md'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 QA Pairs
@@ -123,8 +123,8 @@ const DataViewPage = () => {
                             <button
                                 onClick={() => setViewType('books')}
                                 className={`px-6 py-2 rounded-lg font-medium transition-all ${viewType === 'books'
-                                        ? 'bg-light-red-500 text-white shadow-md'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-light-red-500 text-white shadow-md'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 Books

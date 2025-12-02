@@ -44,7 +44,7 @@ const ContributePage = () => {
         }
 
         try {
-            await axios.post('http://localhost:8000/api/submit', payload);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/submit`, payload);
             setStatus({ type: 'success', message: 'Successfully submitted entry!' });
             setInstruction('');
             setResponse('');
@@ -103,7 +103,7 @@ const ContributePage = () => {
         formData.append('file', uploadFile);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/upload', formData, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -140,7 +140,7 @@ const ContributePage = () => {
         formData.append('file', bookFile);
 
         try {
-            await axios.post('http://localhost:8000/api/books/upload', formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/books/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
