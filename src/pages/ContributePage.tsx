@@ -407,9 +407,9 @@ const ContributePage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="p-8">
-                                <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                                    <Book className="w-6 h-6 text-light-red-500" />
+                            <div className="p-4 md:p-8">
+                                <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                                    <Book className="w-5 h-5 md:w-6 md:h-6 text-light-red-500" />
                                     Upload Tulu Book (PDF)
                                 </h2>
 
@@ -421,9 +421,9 @@ const ContributePage = () => {
                                     </div>
                                 )}
 
-                                <div className="grid md:grid-cols-2 gap-8">
+                                <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                                     <div>
-                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50 mb-6">
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 md:p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50 mb-6">
                                             <input
                                                 type="file"
                                                 accept=".pdf"
@@ -432,8 +432,8 @@ const ContributePage = () => {
                                                 id="book-upload"
                                             />
                                             <label htmlFor="book-upload" className="cursor-pointer flex flex-col items-center">
-                                                <Book className="w-12 h-12 text-gray-400 mb-4" />
-                                                <span className="text-lg font-medium text-gray-700 mb-2">
+                                                <Book className="w-10 h-10 md:w-12 md:h-12 text-gray-400 mb-4" />
+                                                <span className="text-base md:text-lg font-medium text-gray-700 mb-2">
                                                     {bookFile ? bookFile.name : "Drop PDF book here or click to browse"}
                                                 </span>
                                                 <span className="text-sm text-gray-500">Supported format: .pdf</span>
@@ -459,7 +459,7 @@ const ContributePage = () => {
                                                 <button
                                                     onClick={handleBookUpload}
                                                     disabled={isBookUploading}
-                                                    className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center gap-2 disabled:opacity-70"
+                                                    className="w-full md:w-auto bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center justify-center gap-2 disabled:opacity-70"
                                                 >
                                                     {isBookUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                                                     Start Processing
@@ -468,7 +468,7 @@ const ContributePage = () => {
                                         )}
                                     </div>
 
-                                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 h-[500px] flex flex-col">
+                                    <div className="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200 h-[350px] md:h-[500px] flex flex-col">
                                         <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2 justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Book className="w-4 h-4" />
