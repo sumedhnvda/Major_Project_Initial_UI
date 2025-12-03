@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageSquare } from 'lucide-react';
+
+import { MessageSquare, ExternalLink } from 'lucide-react';
 
 const Hero = () => {
   const scrollToDemo = () => {
@@ -21,19 +21,29 @@ const Hero = () => {
             <br />Tulu Language AI
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
             Experience natural conversations in Tulu with our advanced AI model.
-            Built and pre-trained from scratch for authentic Tulu language interaction.
+            Saraswati is a <span className="font-bold text-light-red-500">Causal Language Model</span> trained on Tulu data, sourced from Wikipedia, Tulu books, and a manually translated Tiny Stories dataset.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             <button
-              onClick={() => scrollToDemo(true)}
+              onClick={() => scrollToDemo()}
               className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full transition-colors shadow-md flex items-center gap-2"
             >
               <MessageSquare className="h-5 w-5" />
               Start Chatting
             </button>
+
+            <a
+              href="https://huggingface.co/sumedhn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 px-8 py-3 rounded-full transition-colors shadow-sm flex items-center gap-2 group"
+            >
+              <span>View Models</span>
+              <ExternalLink className="h-4 w-4 text-gray-500 group-hover:text-light-red-500 transition-colors" />
+            </a>
           </div>
 
           <div className="flex justify-center gap-10 mb-8">
