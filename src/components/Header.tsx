@@ -19,6 +19,18 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [scrolled]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -86,24 +98,62 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-cream-50/95 backdrop-blur-sm shadow-lg absolute top-full left-0 right-0 py-4 px-4 flex flex-col gap-4 border-t border-gray-100">
-          <Link to="/" className="text-gray-700 hover:text-light-red-500 font-medium py-2 border-b border-gray-100" onClick={closeMobileMenu}>Home</Link>
-          <Link to="/contribute" className="text-gray-700 hover:text-light-red-500 font-medium py-2 border-b border-gray-100" onClick={closeMobileMenu}>Contribute</Link>
-          <Link to="/data" className="text-gray-700 hover:text-light-red-500 font-medium py-2 border-b border-gray-100" onClick={closeMobileMenu}>View Data</Link>
-          <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-light-red-500 font-medium py-2 border-b border-gray-100" onClick={closeMobileMenu}>Research Paper</a>
+      {/* Mobile Navigation Menu Overlay */}
+      <div
+        className={`fixed inset-0 bg-cream-100/95 backdrop-blur-md z-[60] flex flex-col justify-center items-center transition-all duration-300 md:hidden ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+      >
+        <button
+          className="absolute top-6 right-6 text-gray-700 hover:text-light-red-500 transition-colors"
+          onClick={closeMobileMenu}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <nav className="flex flex-col items-center gap-8 text-lg">
+          <Link
+            to="/"
+            className="text-gray-800 hover:text-light-red-500 font-medium text-xl transition-colors"
+            onClick={closeMobileMenu}
+          >
+            Home
+          </Link>
+          <Link
+            to="/contribute"
+            className="text-gray-800 hover:text-light-red-500 font-medium text-xl transition-colors"
+            onClick={closeMobileMenu}
+          >
+            Contribute
+          </Link>
+          <Link
+            to="/data"
+            className="text-gray-800 hover:text-light-red-500 font-medium text-xl transition-colors"
+            onClick={closeMobileMenu}
+          >
+            View Data
+          </Link>
+          <a
+            href="https://arxiv.org/abs/1706.03762"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-800 hover:text-light-red-500 font-medium text-xl transition-colors"
+            onClick={closeMobileMenu}
+          >
+            Research Paper
+          </a>
           <a
             href="https://github.com/sumedhnvda/sarasvati_TULU_LLM"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-light-red-500 hover:bg-light-red-600 text-white px-5 py-2 rounded-full transition-colors shadow-sm text-center w-full block"
+            className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full transition-colors shadow-lg text-lg mt-4"
             onClick={closeMobileMenu}
           >
             GitHub
           </a>
-        </div>
-      )}
+        </nav>
+      </div>
     </header>
   );
 };

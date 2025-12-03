@@ -185,12 +185,12 @@ const ContributePage = () => {
     };
 
     return (
-        <div className="pt-24 pb-16 min-h-screen bg-cream-100">
-            <div className="container mx-auto px-4">
-                <div className="max-w-4xl mx-auto">
+        <div className="pt-24 pb-16 min-h-screen bg-cream-100 overflow-x-hidden">
+            <div className="container mx-auto px-4 max-w-full">
+                <div className="max-w-4xl mx-auto w-full">
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-800 mb-4">Contribute Data</h1>
-                        <p className="text-gray-600 max-w-2xl mx-auto">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Contribute Data</h1>
+                        <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
                             Help improve the Tulu SLM by contributing data.
                             Choose between QA pairs (Manual/Bulk) or uploading Tulu Books.
                         </p>
@@ -198,10 +198,10 @@ const ContributePage = () => {
 
                     {/* Main Toggle */}
                     <div className="flex justify-center mb-8">
-                        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-200 inline-flex">
+                        <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-200 inline-flex max-w-full overflow-x-auto">
                             <button
                                 onClick={() => { setContributionType('qa'); setStatus(null); }}
-                                className={`px-6 py-2 rounded-lg font-medium transition-all ${contributionType === 'qa'
+                                className={`px-4 md:px-6 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm md:text-base ${contributionType === 'qa'
                                     ? 'bg-light-red-500 text-white shadow-md'
                                     : 'text-gray-600 hover:bg-gray-50'
                                     }`}
@@ -210,7 +210,7 @@ const ContributePage = () => {
                             </button>
                             <button
                                 onClick={() => { setContributionType('books'); setStatus(null); }}
-                                className={`px-6 py-2 rounded-lg font-medium transition-all ${contributionType === 'books'
+                                className={`px-4 md:px-6 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm md:text-base ${contributionType === 'books'
                                     ? 'bg-light-red-500 text-white shadow-md'
                                     : 'text-gray-600 hover:bg-gray-50'
                                     }`}
@@ -220,12 +220,12 @@ const ContributePage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden w-full">
                         {contributionType === 'qa' ? (
                             <>
-                                <div className="flex border-b border-gray-100">
+                                <div className="flex border-b border-gray-100 overflow-x-auto">
                                     <button
-                                        className={`flex-1 py-4 text-center font-medium transition-colors ${activeTab === 'manual'
+                                        className={`flex-1 py-4 text-center font-medium transition-colors min-w-[140px] ${activeTab === 'manual'
                                             ? 'bg-light-red-50 text-light-red-600 border-b-2 border-light-red-500'
                                             : 'text-gray-500 hover:bg-gray-50'
                                             }`}
@@ -237,7 +237,7 @@ const ContributePage = () => {
                                         </div>
                                     </button>
                                     <button
-                                        className={`flex-1 py-4 text-center font-medium transition-colors ${activeTab === 'bulk'
+                                        className={`flex-1 py-4 text-center font-medium transition-colors min-w-[140px] ${activeTab === 'bulk'
                                             ? 'bg-light-red-50 text-light-red-600 border-b-2 border-light-red-500'
                                             : 'text-gray-500 hover:bg-gray-50'
                                             }`}
@@ -250,11 +250,11 @@ const ContributePage = () => {
                                     </button>
                                 </div>
 
-                                <div className="p-8">
+                                <div className="p-4 md:p-8">
                                     {status && (
-                                        <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                                        <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 text-sm md:text-base ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                                             }`}>
-                                            {status.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                            {status.type === 'success' ? <Check className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
                                             {status.message}
                                         </div>
                                     )}
@@ -313,7 +313,7 @@ const ContributePage = () => {
                                                 <button
                                                     type="submit"
                                                     disabled={isSubmitting}
-                                                    className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center gap-2 disabled:opacity-70"
+                                                    className="w-full md:w-auto bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center justify-center gap-2 disabled:opacity-70"
                                                 >
                                                     {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                                                     Submit Entry
@@ -322,7 +322,7 @@ const ContributePage = () => {
                                         </form>
                                     ) : (
                                         <div className="space-y-6">
-                                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 md:p-6 mb-6">
                                                 <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
                                                     <FileText className="w-5 h-5" />
                                                     Required JSON Structure
@@ -330,23 +330,15 @@ const ContributePage = () => {
                                                 <p className="text-sm text-blue-600 mb-4">
                                                     Please ensure your JSON file follows this exact structure. You can upload multiple pairs in a single file.
                                                 </p>
-                                                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                                    <pre className="text-xs text-green-400 font-mono">
+                                                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto max-w-full">
+                                                    <pre className="text-xs text-green-400 font-mono whitespace-pre-wrap break-words">
                                                         {`[
   {
     "instruction": "ತುಳುನಾಡದ ಪ್ರಸಿದ್ಧವಾದ ಮಣ್ಣಿದ ಪ್ರಕಾರದ ಬಗ್ಗೆ ಪನ್ಲೆ.",
-    "response": "ತುಳುನಾಡದ ಮಣ್ಣು ಪ್ರಮುಖವಾದ್ದು ಪಂಡ ಕೆಂಪು ಮಣ್ಣು. ಈ ಮಣ್ಣು ಬೇಸಾಯೊಗು ಬಾರಿ ಎಡ್ಡೆ ಆಯಿನವು. ಅಂಚಾದ್ ಈ ಪ್ರದೇಶೊಡು ಬತ್ತೊದ ಕೃಷಿ ಜಾಸ್ತಿ.",
+    "response": "ತುಳುನಾಡದ ಮಣ್ಣು ಪ್ರಮುಖವಾದ್ದು ಪಂಡ ಕೆಂಪು ಮಣ್ಣು...",
     "translation_en": {
       "instruction": "Tell me about the famous soil type of Tulu Nadu.",
-      "response": "The most important soil of Tulu Nadu is red soil. This soil is very good for farming. Hence, rice cultivation is more common in this region."
-    }
-  },
-  {
-    "instruction": "ತುಳುನಾಡದ ಅತ್ಯಂತ ಎತ್ತರೊದ ಜಲಪಾತದ ಪುದರ್ ಎಂಚಿನ?",
-    "response": "ತುಳುನಾಡದ ಅತ್ಯಂತ ಎತ್ತರೊದ ಜಲಪಾತ ಗರ್ಜನಾ ಜಲಪಾತ. ಉಂದು ಬಾರೀ ಪೊರ್ಲುದ ಜಾಗೆ ಬೊಕ್ಕ ಬೇಸಾಯೊಗು ಬಾರೀ ಎಡ್ಡೆ.",
-    "translation_en": {
-      "instruction": "What is the name of the highest waterfall in Tulu Nadu?",
-      "response": "The highest waterfall in Tulu Nadu is Gajjana Waterfall. It is a very beautiful place and is very good for farming."
+      "response": "The most important soil of Tulu Nadu is red soil..."
     }
   }
 ]`}
@@ -354,7 +346,7 @@ const ContributePage = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50">
+                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 md:p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50">
                                                 <input
                                                     type="file"
                                                     accept=".json"
@@ -363,8 +355,8 @@ const ContributePage = () => {
                                                     id="file-upload"
                                                 />
                                                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
-                                                    <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                                                    <span className="text-lg font-medium text-gray-700 mb-2">Drop your JSON file here or click to browse</span>
+                                                    <Upload className="w-10 h-10 md:w-12 md:h-12 text-gray-400 mb-4" />
+                                                    <span className="text-base md:text-lg font-medium text-gray-700 mb-2">Drop your JSON file here or click to browse</span>
                                                     <span className="text-sm text-gray-500">Supported format: .json</span>
                                                 </label>
                                             </div>
@@ -372,10 +364,10 @@ const ContributePage = () => {
                                             {uploadFile && (
                                                 <div className="bg-cream-50 rounded-lg p-4">
                                                     <div className="flex items-center justify-between mb-4">
-                                                        <span className="font-medium text-gray-700">Selected File: {uploadFile.name}</span>
+                                                        <span className="font-medium text-gray-700 truncate max-w-[200px] md:max-w-none">Selected File: {uploadFile.name}</span>
                                                         <button
                                                             onClick={() => { setUploadFile(null); setPreviewData([]); }}
-                                                            className="text-red-500 text-sm hover:underline"
+                                                            className="text-red-500 text-sm hover:underline flex-shrink-0"
                                                         >
                                                             Remove
                                                         </button>
@@ -396,7 +388,7 @@ const ContributePage = () => {
                                                 <button
                                                     onClick={handleBulkSubmit}
                                                     disabled={!uploadFile || isSubmitting}
-                                                    className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center gap-2 disabled:opacity-70"
+                                                    className="w-full md:w-auto bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center justify-center gap-2 disabled:opacity-70"
                                                 >
                                                     {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                                                     Upload File
@@ -414,15 +406,15 @@ const ContributePage = () => {
                                 </h2>
 
                                 {status && (
-                                    <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                                    <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 text-sm md:text-base ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                                         }`}>
-                                        {status.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                        {status.type === 'success' ? <Check className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
                                         {status.message}
                                     </div>
                                 )}
 
                                 <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-                                    <div>
+                                    <div className="w-full min-w-0">
                                         <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 md:p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50 mb-6">
                                             <input
                                                 type="file"
@@ -433,24 +425,24 @@ const ContributePage = () => {
                                             />
                                             <label htmlFor="book-upload" className="cursor-pointer flex flex-col items-center">
                                                 <Book className="w-10 h-10 md:w-12 md:h-12 text-gray-400 mb-4" />
-                                                <span className="text-base md:text-lg font-medium text-gray-700 mb-2">
+                                                <span className="text-base md:text-lg font-medium text-gray-700 mb-2 text-center">
                                                     {bookFile ? bookFile.name : "Drop PDF book here or click to browse"}
                                                 </span>
                                                 <span className="text-sm text-gray-500">Supported format: .pdf</span>
                                             </label>
                                         </div>
 
-                                        <div className="flex items-center gap-2 mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <div className="flex items-start gap-2 mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
                                             <input
                                                 type="checkbox"
                                                 id="skipOcr"
                                                 checked={skipOcr}
                                                 onChange={(e) => setSkipOcr(e.target.checked)}
-                                                className="w-5 h-5 text-light-red-500 rounded focus:ring-light-red-500 border-gray-300"
+                                                className="w-5 h-5 text-light-red-500 rounded focus:ring-light-red-500 border-gray-300 mt-0.5"
                                             />
                                             <label htmlFor="skipOcr" className="text-sm text-gray-700 cursor-pointer select-none">
-                                                <span className="font-medium">Skip Processing (Archival Mode)</span>
-                                                <p className="text-xs text-gray-500">Save PDF directly without extracting text. Useful for large books.</p>
+                                                <span className="font-medium block">Skip Processing (Archival Mode)</span>
+                                                <span className="text-xs text-gray-500 block mt-1">Save PDF directly without extracting text. Useful for large books.</span>
                                             </label>
                                         </div>
 
@@ -468,8 +460,8 @@ const ContributePage = () => {
                                         )}
                                     </div>
 
-                                    <div className="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200 h-[350px] md:h-[500px] flex flex-col">
-                                        <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2 justify-between">
+                                    <div className="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200 h-[350px] md:h-[500px] flex flex-col w-full min-w-0">
+                                        <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2 justify-between flex-wrap">
                                             <div className="flex items-center gap-2">
                                                 <Book className="w-4 h-4" />
                                                 Existing Books
@@ -490,7 +482,7 @@ const ContributePage = () => {
                                         <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                                             {filteredBooks.map((book) => (
                                                 <div key={book._id} className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm flex items-center gap-3">
-                                                    <div className="p-2 bg-cream-100 rounded-lg">
+                                                    <div className="p-2 bg-cream-100 rounded-lg flex-shrink-0">
                                                         <FileText className="w-4 h-4 text-light-red-600" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -502,11 +494,11 @@ const ContributePage = () => {
                                                         </p>
                                                     </div>
                                                     {book.status === 'completed' ? (
-                                                        <Check className="w-4 h-4 text-green-500" />
+                                                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                                                     ) : book.status === 'archived' ? (
-                                                        <div className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full font-medium">ARCHIVED</div>
+                                                        <div className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0">ARCHIVED</div>
                                                     ) : (
-                                                        <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                                                        <Loader2 className="w-4 h-4 text-blue-500 animate-spin flex-shrink-0" />
                                                     )}
                                                 </div>
                                             ))}
