@@ -222,6 +222,24 @@ def process_book_background(file_path: str, filename: str, book_id: str):
         if os.path.exists(cleaned_output_path):
             os.remove(cleaned_output_path)
 
+@app.get("/api/debug/system")
+async def debug_system():
+    import subprocess
+    try:
+        tesseract_version = subprocess.check_output(["tesseract", "--version"], stderr=subprocess.STDOUT).decode()
+    except Exception as e:
+        tesseract_version = str(e)
+        
+    try:
+        tesseract_langs = subprocess.check_output(["tesseract", "--list-langs"], stderr=subprocess.STDOUT).decode()
+    except Exception as e:
+        tesseract_langs = str(e)
+        
+    return {
+        "tesseract_version": tesseract_version,
+        "tesseract_langs": tesseract_langs
+    }
+
 from datetime import datetime
 import uuid
 

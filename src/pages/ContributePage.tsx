@@ -26,7 +26,17 @@ const ContributePage = () => {
 
     React.useEffect(() => {
         fetchBooks();
-    }, []);
+
+        // Poll for updates every 5 seconds if on books tab
+        let interval: NodeJS.Timeout;
+        if (contributionType === 'books') {
+            interval = setInterval(fetchBooks, 5000);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [contributionType]);
 
     const fetchBooks = async () => {
         try {
