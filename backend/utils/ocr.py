@@ -46,12 +46,12 @@ def ocr_page_worker(args: Tuple[str, int, int, str, str]) -> Tuple[int, bool, st
     except Exception as e:
         return page_no, False, f"[ERROR page {page_no}: {e}]"
 
-def ocr_book_with_parallel_pages(pdf_path: str, dpi: int = DPI,
+def ocr_book_with_parallel_pages(pdf_path: str, out_txt_path: str, dpi: int = DPI,
                                  lang: str = LANG, poppler_path: str = POPPLER_PATH,
-                                 max_workers: int = MAX_PAGE_WORKERS) -> Tuple[bool, str]:
+                                 max_workers: int = MAX_PAGE_WORKERS) -> bool:
     """
-    OCR a single PDF book: process pages in parallel (bounded).
-    Returns (success, full_text).
+    OCR a single PDF book: process pages in parallel (bounded), write a .tmp then rename.
+    Returns True on success, False on failure (partial outputs kept as .tmp if interrupted).
     """
     book_name = os.path.basename(pdf_path)
     print(f"\nProcessing book: {book_name}")
@@ -62,11 +62,19 @@ def ocr_book_with_parallel_pages(pdf_path: str, dpi: int = DPI,
         total_pages = int(info.get("Pages", 0))
     except Exception as e:
         print(f"  ❌ Could not read PDF info: {e}")
-        return False, ""
+        return False
 
     if total_pages == 0:
         print("  ⚠️ No pages found. Skipping.")
-        return False, ""
+        return False
+
+    temp_out = out_txt_path + ".tmp"
+    # remove stale temp
+    if os.path.exists(temp_out):
+        try:
+            os.remove(temp_out)
+        except Exception:
+            pass
 
     # We'll store results in a dict indexed by page_no
     page_results = {}
@@ -99,27 +107,33 @@ def ocr_book_with_parallel_pages(pdf_path: str, dpi: int = DPI,
                     page_results[pno] = (success, text_or_err)
                     pbar.update(1)
 
-        # Combine results in order
-        full_text_parts = []
-        for page_no in range(1, total_pages + 1):
-            res = page_results.get(page_no)
-            if res:
-                success, text_or_err = res
-                # full_text_parts.append(f"--- Page {page_no} ---") # Optional: keep page markers? User said "clean output", maybe remove markers? 
-                # Keeping markers might be useful for context, but let's stick to content. 
-                # Actually, clean.py usually strips these. Let's just append the text.
-                full_text_parts.append(text_or_err if success else text_or_err + "\n")
-                full_text_parts.append("\n\n")
+        # All page jobs completed (maybe with failures). Write the output file in order.
+        with open(temp_out, "w", encoding="utf-8") as fout:
+            for page_no in range(1, total_pages + 1):
+                res = page_results.get(page_no)
+                if res is None:
+                    fout.write(f"--- Page {page_no} ---\n[NO RESULT]\n\n")
+                else:
+                    success, text_or_err = res
+                    fout.write(f"--- Page {page_no} ---\n")
+                    fout.write(text_or_err if success else text_or_err + "\n")
+                    fout.write("\n\n")
 
-        full_text = "".join(full_text_parts)
-
+        # move temp to final
+        shutil.move(temp_out, out_txt_path)
         elapsed = time.time() - start_time
-        print(f"  ✅ OCR Complete (pages: {total_pages}, elapsed: {elapsed:.1f}s)")
-        return True, full_text
+        print(f"  ✅ Saved: {out_txt_path}  (pages: {total_pages}, elapsed: {elapsed:.1f}s)")
+        return True
 
     except KeyboardInterrupt:
-        print("\n  ⏸ Interrupted by user.")
-        return False, ""
+        print("\n  ⏸ Interrupted by user. Partial results may remain as .tmp")
+        # leave temp as-is so user can inspect
+        return False
     except Exception as e:
         print(f"  ❌ Unexpected error while processing book: {e}")
-        return False, ""
+        try:
+            if os.path.exists(temp_out):
+                os.remove(temp_out)
+        except Exception:
+            pass
+        return False

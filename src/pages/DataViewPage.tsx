@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Loader2, Database, Globe, Book, FileText, Check, AlertCircle, Eye, X, RefreshCw } from 'lucide-react';
+import { Loader2, Database, Globe, Book, FileText, Check, AlertCircle, Eye, X, RefreshCw, Download } from 'lucide-react';
 
 interface Translation {
     instruction: string;
@@ -97,6 +97,62 @@ const DataViewPage = () => {
         setSelectedBook(null);
     };
 
+    const [qaSearch, setQaSearch] = useState('');
+    const [bookSearch, setBookSearch] = useState('');
+
+    const filteredQA = data.filter(item =>
+        item.instruction.toLowerCase().includes(qaSearch.toLowerCase()) ||
+        item.response.toLowerCase().includes(qaSearch.toLowerCase())
+    );
+
+    const filteredBooks = books.filter(book =>
+        book.filename.toLowerCase().includes(bookSearch.toLowerCase())
+    );
+
+    const handleDownloadQA = () => {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "tulu_qa_dataset.json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleDownloadBook = async (book: BookEntry) => {
+        try {
+            let content = book.content;
+            if (!content) {
+                const response = await axios.get(`https://saraswati-b52q.onrender.com/api/books/${book._id}`);
+                content = response.data.content;
+            }
+
+            if (!content) {
+                alert('No content available for this book.');
+                return;
+            }
+
+            const blob = new Blob([content], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${book.filename.replace('.pdf', '')}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading book:", error);
+            alert('Failed to download book content.');
+        }
+    };
+
+    const handleDownloadAllBooks = () => {
+        const url = `https://saraswati-b52q.onrender.com/api/books/download/all`;
+        window.open(url, '_blank');
+    };
+
     return (
         <div className="pt-24 pb-16 min-h-screen bg-cream-100">
             <div className="container mx-auto px-4">
@@ -134,6 +190,23 @@ const DataViewPage = () => {
 
                     {viewType === 'qa' ? (
                         <>
+                            <div className="flex justify-between items-center mb-6">
+                                <input
+                                    type="text"
+                                    placeholder="Search QA pairs..."
+                                    value={qaSearch}
+                                    onChange={(e) => setQaSearch(e.target.value)}
+                                    className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-light-red-500 focus:border-transparent"
+                                />
+                                <button
+                                    onClick={handleDownloadQA}
+                                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors ml-4"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Download JSON
+                                </button>
+                            </div>
+
                             {loading ? (
                                 <div className="flex justify-center items-center h-64">
                                     <Loader2 className="w-12 h-12 text-light-red-500 animate-spin" />
@@ -142,15 +215,15 @@ const DataViewPage = () => {
                                 <div className="bg-red-50 text-red-700 p-6 rounded-xl text-center">
                                     <p>{error}</p>
                                 </div>
-                            ) : data.length === 0 ? (
+                            ) : filteredQA.length === 0 ? (
                                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                                     <Database className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-medium text-gray-800 mb-2">No Data Yet</h3>
-                                    <p className="text-gray-500">Be the first to contribute!</p>
+                                    <h3 className="text-xl font-medium text-gray-800 mb-2">No Data Found</h3>
+                                    <p className="text-gray-500">Try adjusting your search query.</p>
                                 </div>
                             ) : (
-                                <div className="grid gap-6">
-                                    {data.map((item) => (
+                                <div className="grid gap-6 h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {filteredQA.map((item) => (
                                         <div key={item.id} className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow border border-gray-100">
                                             <div className="grid md:grid-cols-2 gap-6">
                                                 {/* Tulu Content */}
@@ -205,23 +278,39 @@ const DataViewPage = () => {
                         </>
                     ) : (
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-light-red-500" />
-                                    Processed Books
-                                </h2>
-                                <button onClick={fetchBooks} className="text-gray-500 hover:text-light-red-500 transition-colors">
-                                    <RefreshCw className={`w-5 h-5 ${loadingBooks ? 'animate-spin' : ''}`} />
-                                </button>
+                            <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div className="flex items-center gap-4 w-full md:w-auto">
+                                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 whitespace-nowrap">
+                                        <FileText className="w-5 h-5 text-light-red-500" />
+                                        Processed Books
+                                    </h2>
+                                    <button onClick={fetchBooks} className="text-gray-500 hover:text-light-red-500 transition-colors">
+                                        <RefreshCw className={`w-5 h-5 ${loadingBooks ? 'animate-spin' : ''}`} />
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadAllBooks}
+                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-colors text-sm ml-2"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download All Text
+                                    </button>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search books..."
+                                    value={bookSearch}
+                                    onChange={(e) => setBookSearch(e.target.value)}
+                                    className="w-full md:max-w-xs px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-light-red-500 focus:border-transparent"
+                                />
                             </div>
 
-                            <div className="divide-y divide-gray-100">
-                                {books.length === 0 ? (
+                            <div className="divide-y divide-gray-100 h-[600px] overflow-y-auto custom-scrollbar">
+                                {filteredBooks.length === 0 ? (
                                     <div className="p-8 text-center text-gray-500">
-                                        No books uploaded yet.
+                                        No books found.
                                     </div>
                                 ) : (
-                                    books.map((book) => (
+                                    filteredBooks.map((book) => (
                                         <div key={book._id} className="p-6 hover:bg-gray-50 transition-colors">
                                             <div className="flex items-start justify-between">
                                                 <div>
@@ -248,15 +337,27 @@ const DataViewPage = () => {
                                                         </span>
                                                     )}
                                                 </div>
-                                                {book.status === 'completed' && (
-                                                    <button
-                                                        onClick={() => handleViewContent(book)}
-                                                        className="flex items-center gap-2 text-gray-600 hover:text-light-red-500 transition-colors px-4 py-2 rounded-lg hover:bg-light-red-50"
-                                                    >
-                                                        <Eye className="w-4 h-4" />
-                                                        View Content
-                                                    </button>
-                                                )}
+                                                <div className="flex items-center gap-2">
+                                                    {book.status === 'completed' && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleViewContent(book)}
+                                                                className="flex items-center gap-2 text-gray-600 hover:text-light-red-500 transition-colors px-3 py-2 rounded-lg hover:bg-light-red-50 text-sm"
+                                                            >
+                                                                <Eye className="w-4 h-4" />
+                                                                View
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDownloadBook(book)}
+                                                                className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors px-3 py-2 rounded-lg hover:bg-blue-50 text-sm"
+                                                                title="Download Text"
+                                                            >
+                                                                <Download className="w-4 h-4" />
+                                                                TXT
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))

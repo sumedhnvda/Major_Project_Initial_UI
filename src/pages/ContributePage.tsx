@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Check, AlertCircle, Loader2, Book } from 'lucide-react';
 import axios from 'axios';
-import Papa from 'papaparse';
 
 const ContributePage = () => {
     const [contributionType, setContributionType] = useState<'qa' | 'books'>('qa');
@@ -22,6 +21,25 @@ const ContributePage = () => {
     // Book Upload States
     const [bookFile, setBookFile] = useState<File | null>(null);
     const [isBookUploading, setIsBookUploading] = useState(false);
+    const [existingBooks, setExistingBooks] = useState<any[]>([]);
+    const [bookSearch, setBookSearch] = useState('');
+
+    React.useEffect(() => {
+        fetchBooks();
+    }, []);
+
+    const fetchBooks = async () => {
+        try {
+            const response = await axios.get('https://saraswati-b52q.onrender.com/api/books');
+            setExistingBooks(response.data);
+        } catch (error) {
+            console.error('Error fetching books:', error);
+        }
+    };
+
+    const filteredBooks = existingBooks.filter(book =>
+        book.filename.toLowerCase().includes(bookSearch.toLowerCase())
+    );
 
     const handleManualSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,17 +82,7 @@ const ContributePage = () => {
             setStatus(null);
             setPreviewData([]);
 
-            if (file.name.endsWith('.csv')) {
-                Papa.parse(file, {
-                    header: true,
-                    complete: (results) => {
-                        setPreviewData(results.data.slice(0, 5));
-                    },
-                    error: (error) => {
-                        setStatus({ type: 'error', message: `Error parsing CSV: ${error.message}` });
-                    }
-                });
-            } else if (file.name.endsWith('.json')) {
+            if (file.name.endsWith('.json')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
@@ -87,7 +95,7 @@ const ContributePage = () => {
                 };
                 reader.readAsText(file);
             } else {
-                setStatus({ type: 'error', message: 'Unsupported file format. Please upload .csv or .json' });
+                setStatus({ type: 'error', message: 'Unsupported file format. Please upload .json' });
                 setUploadFile(null);
             }
         }
@@ -125,6 +133,16 @@ const ContributePage = () => {
                 setStatus({ type: 'error', message: 'Please upload a PDF file.' });
                 return;
             }
+
+            // Check for duplicates
+            const isDuplicate = existingBooks.some(book => book.filename === file.name);
+            if (isDuplicate) {
+                setStatus({ type: 'error', message: 'This book has already been uploaded.' });
+                setBookFile(null);
+                e.target.value = ''; // Reset input
+                return;
+            }
+
             setBookFile(file);
             setStatus(null);
         }
@@ -151,6 +169,7 @@ const ContributePage = () => {
             setStatus({ type: 'error', message: 'Failed to upload book.' });
         } finally {
             setIsBookUploading(false);
+            fetchBooks(); // Refresh list
         }
     };
 
@@ -215,7 +234,7 @@ const ContributePage = () => {
                                     >
                                         <div className="flex items-center justify-center gap-2">
                                             <Upload className="w-5 h-5" />
-                                            Bulk Upload (CSV/JSON)
+                                            Bulk Upload (JSON)
                                         </div>
                                     </button>
                                 </div>
@@ -292,18 +311,50 @@ const ContributePage = () => {
                                         </form>
                                     ) : (
                                         <div className="space-y-6">
+                                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                                                <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                                    <FileText className="w-5 h-5" />
+                                                    Required JSON Structure
+                                                </h3>
+                                                <p className="text-sm text-blue-600 mb-4">
+                                                    Please ensure your JSON file follows this exact structure. You can upload multiple pairs in a single file.
+                                                </p>
+                                                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                                                    <pre className="text-xs text-green-400 font-mono">
+                                                        {`[
+  {
+    "instruction": "ತುಳುನಾಡದ ಪ್ರಸಿದ್ಧವಾದ ಮಣ್ಣಿದ ಪ್ರಕಾರದ ಬಗ್ಗೆ ಪನ್ಲೆ.",
+    "response": "ತುಳುನಾಡದ ಮಣ್ಣು ಪ್ರಮುಖವಾದ್ದು ಪಂಡ ಕೆಂಪು ಮಣ್ಣು. ಈ ಮಣ್ಣು ಬೇಸಾಯೊಗು ಬಾರಿ ಎಡ್ಡೆ ಆಯಿನವು. ಅಂಚಾದ್ ಈ ಪ್ರದೇಶೊಡು ಬತ್ತೊದ ಕೃಷಿ ಜಾಸ್ತಿ.",
+    "translation_en": {
+      "instruction": "Tell me about the famous soil type of Tulu Nadu.",
+      "response": "The most important soil of Tulu Nadu is red soil. This soil is very good for farming. Hence, rice cultivation is more common in this region."
+    }
+  },
+  {
+    "instruction": "ತುಳುನಾಡದ ಅತ್ಯಂತ ಎತ್ತರೊದ ಜಲಪಾತದ ಪುದರ್ ಎಂಚಿನ?",
+    "response": "ತುಳುನಾಡದ ಅತ್ಯಂತ ಎತ್ತರೊದ ಜಲಪಾತ ಗರ್ಜನಾ ಜಲಪಾತ. ಉಂದು ಬಾರೀ ಪೊರ್ಲುದ ಜಾಗೆ ಬೊಕ್ಕ ಬೇಸಾಯೊಗು ಬಾರೀ ಎಡ್ಡೆ.",
+    "translation_en": {
+      "instruction": "What is the name of the highest waterfall in Tulu Nadu?",
+      "response": "The highest waterfall in Tulu Nadu is Gajjana Waterfall. It is a very beautiful place and is very good for farming."
+    }
+  }
+]`}
+                                                    </pre>
+                                                </div>
+                                            </div>
+
                                             <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50">
                                                 <input
                                                     type="file"
-                                                    accept=".csv,.json"
+                                                    accept=".json"
                                                     onChange={handleFileChange}
                                                     className="hidden"
                                                     id="file-upload"
                                                 />
                                                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
                                                     <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                                                    <span className="text-lg font-medium text-gray-700 mb-2">Drop your file here or click to browse</span>
-                                                    <span className="text-sm text-gray-500">Supported formats: .csv, .json</span>
+                                                    <span className="text-lg font-medium text-gray-700 mb-2">Drop your JSON file here or click to browse</span>
+                                                    <span className="text-sm text-gray-500">Supported format: .json</span>
                                                 </label>
                                             </div>
 
@@ -359,35 +410,87 @@ const ContributePage = () => {
                                     </div>
                                 )}
 
-                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50">
-                                    <input
-                                        type="file"
-                                        accept=".pdf"
-                                        onChange={handleBookFileChange}
-                                        className="hidden"
-                                        id="book-upload"
-                                    />
-                                    <label htmlFor="book-upload" className="cursor-pointer flex flex-col items-center">
-                                        <Book className="w-12 h-12 text-gray-400 mb-4" />
-                                        <span className="text-lg font-medium text-gray-700 mb-2">
-                                            {bookFile ? bookFile.name : "Drop PDF book here or click to browse"}
-                                        </span>
-                                        <span className="text-sm text-gray-500">Supported format: .pdf</span>
-                                    </label>
-                                </div>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <div>
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-light-red-500 transition-colors bg-gray-50 mb-6">
+                                            <input
+                                                type="file"
+                                                accept=".pdf"
+                                                onChange={handleBookFileChange}
+                                                className="hidden"
+                                                id="book-upload"
+                                            />
+                                            <label htmlFor="book-upload" className="cursor-pointer flex flex-col items-center">
+                                                <Book className="w-12 h-12 text-gray-400 mb-4" />
+                                                <span className="text-lg font-medium text-gray-700 mb-2">
+                                                    {bookFile ? bookFile.name : "Drop PDF book here or click to browse"}
+                                                </span>
+                                                <span className="text-sm text-gray-500">Supported format: .pdf</span>
+                                            </label>
+                                        </div>
 
-                                {bookFile && (
-                                    <div className="mt-6 flex justify-end">
-                                        <button
-                                            onClick={handleBookUpload}
-                                            disabled={isBookUploading}
-                                            className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center gap-2 disabled:opacity-70"
-                                        >
-                                            {isBookUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-                                            Start Processing
-                                        </button>
+                                        {bookFile && (
+                                            <div className="flex justify-end">
+                                                <button
+                                                    onClick={handleBookUpload}
+                                                    disabled={isBookUploading}
+                                                    className="bg-light-red-500 hover:bg-light-red-600 text-white px-8 py-3 rounded-full font-medium transition-colors shadow-lg shadow-light-red-500/30 flex items-center gap-2 disabled:opacity-70"
+                                                >
+                                                    {isBookUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                                                    Start Processing
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+
+                                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 h-[500px] flex flex-col">
+                                        <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2 justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Book className="w-4 h-4" />
+                                                Existing Books
+                                            </div>
+                                            <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                                {existingBooks.length} Books
+                                            </span>
+                                        </h3>
+                                        <div className="relative mb-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Search books..."
+                                                value={bookSearch}
+                                                onChange={(e) => setBookSearch(e.target.value)}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-light-red-500 focus:border-transparent text-sm"
+                                            />
+                                        </div>
+                                        <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                                            {filteredBooks.map((book) => (
+                                                <div key={book._id} className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm flex items-center gap-3">
+                                                    <div className="p-2 bg-cream-100 rounded-lg">
+                                                        <FileText className="w-4 h-4 text-light-red-600" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium text-gray-700 truncate" title={book.filename}>
+                                                            {book.filename}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {new Date(book.uploaded_at).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                    {book.status === 'completed' ? (
+                                                        <Check className="w-4 h-4 text-green-500" />
+                                                    ) : (
+                                                        <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {filteredBooks.length === 0 && (
+                                                <div className="text-center py-8 text-gray-500 text-sm">
+                                                    No books
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

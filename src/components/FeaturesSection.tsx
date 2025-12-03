@@ -21,7 +21,7 @@ const FeaturesSection = () => {
     {
       icon: <MessageSquare className="h-6 w-6 text-light-red-500" />,
       title: "General-Purpose Conversational Ability",
-      description: "Finetuned on diverse Q&A pairs to enable natural, context-aware dialogue in Tulu and supports a wide range of everyday topics and use cases"
+      description: "Can be Finetuned on diverse Q&A pairs to enable natural, context-aware dialogue in Tulu and supports a wide range of everyday topics and use cases"
     },
     {
       icon: <Workflow className="h-6 w-6 text-light-red-500" />,

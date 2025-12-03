@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -11,7 +12,7 @@ import shutil
 from database import db
 from fastapi import BackgroundTasks
 from utils.ocr import ocr_book_with_parallel_pages
-from utils.clean import clean_text
+from utils.clean import clean_text, clean_file
 
 # Data Models
 class Translation(BaseModel):
@@ -51,6 +52,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from fastapi.staticfiles import StaticFiles
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Endpoints
 
@@ -154,10 +158,13 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def process_book_background(file_path: str, filename: str, book_id: str):
+    ocr_output_path = os.path.join(UPLOAD_FOLDER, f"{book_id}_ocr.txt")
+    cleaned_output_path = os.path.join(UPLOAD_FOLDER, f"{book_id}_cleaned.txt")
+    
     try:
         # 1. OCR
         print(f"Starting OCR for {filename}...")
-        success, ocr_text = ocr_book_with_parallel_pages(file_path)
+        success = ocr_book_with_parallel_pages(file_path, ocr_output_path)
         
         if not success:
              print(f"OCR failed for {filename}")
@@ -168,12 +175,21 @@ def process_book_background(file_path: str, filename: str, book_id: str):
              # Cleanup
              if os.path.exists(file_path):
                 os.remove(file_path)
+             if os.path.exists(ocr_output_path):
+                os.remove(ocr_output_path)
+             print(f"OCR failed for {filename}. Cleanup complete.")
              return
 
         # 2. Clean
         print(f"Starting cleaning for {filename}...")
-        cleaned_content, kept_lines = clean_text(ocr_text)
-        print(f"Cleaning complete for {filename}. Kept {kept_lines} lines.")
+        
+        kept_lines = clean_file(ocr_output_path, cleaned_output_path)
+        
+        # Read cleaned content
+        with open(cleaned_output_path, "r", encoding="utf-8") as f:
+            cleaned_content = f.read()
+            
+        print(f"Cleaning complete for {filename}. Kept {kept_lines} lines. Content length: {len(cleaned_content)}")
 
         # 3. Store in DB
         db.get_books_db().books.update_one(
@@ -189,7 +205,11 @@ def process_book_background(file_path: str, filename: str, book_id: str):
         # Cleanup
         if os.path.exists(file_path):
             os.remove(file_path)
-            print(f"Deleted original file: {file_path}")
+        if os.path.exists(ocr_output_path):
+            os.remove(ocr_output_path)
+        if os.path.exists(cleaned_output_path):
+            os.remove(cleaned_output_path)
+        print(f"Cleanup complete for {filename}")
         
     except Exception as e:
         print(f"Error processing book {filename}: {e}")
@@ -200,7 +220,10 @@ def process_book_background(file_path: str, filename: str, book_id: str):
         # Cleanup on error too
         if os.path.exists(file_path):
             os.remove(file_path)
-            print(f"Deleted original file after error: {file_path}")
+        if os.path.exists(ocr_output_path):
+            os.remove(ocr_output_path)
+        if os.path.exists(cleaned_output_path):
+            os.remove(cleaned_output_path)
 
 from datetime import datetime
 import uuid
@@ -253,5 +276,24 @@ async def get_book_content(book_id: str):
         if not book:
             raise HTTPException(status_code=404, detail="Book not found")
         return book
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/books/download/all")
+async def download_all_books():
+    try:
+        cursor = db.get_books_db().books.find({"status": "completed"})
+        
+        async def iter_books():
+            async for book in cursor:
+                if "content" in book and book["content"]:
+                    yield f"\n\n--- Book: {book['filename']} ---\n\n"
+                    yield book["content"]
+        
+        return StreamingResponse(
+            iter_books(),
+            media_type="text/plain",
+            headers={"Content-Disposition": "attachment; filename=all_tulu_books.txt"}
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
