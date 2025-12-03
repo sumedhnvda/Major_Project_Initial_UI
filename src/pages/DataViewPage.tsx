@@ -18,7 +18,7 @@ interface QAPair {
 interface BookEntry {
     _id: string;
     filename: string;
-    status: 'processing' | 'completed' | 'failed';
+    status: 'processing' | 'completed' | 'failed' | 'archived';
     uploaded_at: string;
     kept_lines?: number;
     error?: string;
@@ -150,6 +150,11 @@ const DataViewPage = () => {
 
     const handleDownloadAllBooks = () => {
         const url = `https://major-project-initial-ui.onrender.com/api/books/download/all`;
+        window.open(url, '_blank');
+    };
+
+    const handleDownloadArchivedBook = (book: BookEntry) => {
+        const url = `https://major-project-initial-ui.onrender.com/api/books/${book._id}/download`;
         window.open(url, '_blank');
     };
 
@@ -336,6 +341,12 @@ const DataViewPage = () => {
                                                             Processing...
                                                         </span>
                                                     )}
+                                                    {book.status === 'archived' && (
+                                                        <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                                                            <Book className="w-3 h-3" />
+                                                            Archived (PDF)
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {book.status === 'completed' && (
@@ -356,6 +367,16 @@ const DataViewPage = () => {
                                                                 TXT
                                                             </button>
                                                         </>
+                                                    )}
+                                                    {book.status === 'archived' && (
+                                                        <button
+                                                            onClick={() => handleDownloadArchivedBook(book)}
+                                                            className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-lg hover:bg-red-50 text-sm"
+                                                            title="Download PDF"
+                                                        >
+                                                            <Download className="w-4 h-4" />
+                                                            PDF
+                                                        </button>
                                                     )}
                                                 </div>
                                             </div>
