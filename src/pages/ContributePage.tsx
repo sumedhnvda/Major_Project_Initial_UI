@@ -23,6 +23,7 @@ const ContributePage = () => {
     const [isBookUploading, setIsBookUploading] = useState(false);
     const [existingBooks, setExistingBooks] = useState<any[]>([]);
     const [bookSearch, setBookSearch] = useState('');
+    const [skipOcr, setSkipOcr] = useState(false);
 
     React.useEffect(() => {
         fetchBooks();
@@ -168,7 +169,7 @@ const ContributePage = () => {
         formData.append('file', bookFile);
 
         try {
-            await axios.post(`https://major-project-initial-ui.onrender.com/api/books/upload`, formData, {
+            await axios.post(`https://major-project-initial-ui.onrender.com/api/books/upload?skip_ocr=${skipOcr}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -439,6 +440,20 @@ const ContributePage = () => {
                                             </label>
                                         </div>
 
+                                        <div className="flex items-center gap-2 mb-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                            <input
+                                                type="checkbox"
+                                                id="skipOcr"
+                                                checked={skipOcr}
+                                                onChange={(e) => setSkipOcr(e.target.checked)}
+                                                className="w-5 h-5 text-light-red-500 rounded focus:ring-light-red-500 border-gray-300"
+                                            />
+                                            <label htmlFor="skipOcr" className="text-sm text-gray-700 cursor-pointer select-none">
+                                                <span className="font-medium">Skip Processing (Archival Mode)</span>
+                                                <p className="text-xs text-gray-500">Save PDF directly without extracting text. Useful for large books.</p>
+                                            </label>
+                                        </div>
+
                                         {bookFile && (
                                             <div className="flex justify-end">
                                                 <button
@@ -488,6 +503,8 @@ const ContributePage = () => {
                                                     </div>
                                                     {book.status === 'completed' ? (
                                                         <Check className="w-4 h-4 text-green-500" />
+                                                    ) : book.status === 'archived' ? (
+                                                        <div className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full font-medium">ARCHIVED</div>
                                                     ) : (
                                                         <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
                                                     )}

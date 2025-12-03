@@ -13,6 +13,8 @@ from database import db
 from fastapi import BackgroundTasks
 from utils.ocr import ocr_book_with_parallel_pages
 from utils.clean import clean_text, clean_file
+from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+from bson import ObjectId
 
 # Data Models
 class Translation(BaseModel):
@@ -241,7 +243,11 @@ from datetime import datetime
 import uuid
 
 @app.post("/api/books/upload")
-async def upload_book(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def upload_book(
+    background_tasks: BackgroundTasks, 
+    file: UploadFile = File(...), 
+    skip_ocr: bool = False
+):
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
         
@@ -249,24 +255,45 @@ async def upload_book(background_tasks: BackgroundTasks, file: UploadFile = File
         # Generate ID
         book_id = str(uuid.uuid4())
         
-        # Save file
-        file_path = os.path.join(UPLOAD_FOLDER, f"{book_id}_{file.filename}")
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        if skip_ocr:
+            # Store in GridFS (Archival Mode)
+            fs = AsyncIOMotorGridFSBucket(db.get_books_db())
+            file_id = await fs.upload_from_stream(
+                file.filename,
+                file.file,
+                metadata={"book_id": book_id, "content_type": file.content_type}
+            )
             
-        # Create DB entry
-        book_entry = {
-            "_id": book_id,
-            "filename": file.filename,
-            "status": "processing",
-            "uploaded_at": str(datetime.now())
-        }
-        await db.get_books_db().books.insert_one(book_entry)
-        
-        # Trigger background task
-        background_tasks.add_task(process_book_background, file_path, file.filename, book_id)
-        
-        return {"message": "Book uploaded and processing started", "book_id": book_id}
+            book_entry = {
+                "_id": book_id,
+                "filename": file.filename,
+                "status": "archived",
+                "uploaded_at": str(datetime.now()),
+                "gridfs_id": str(file_id)
+            }
+            await db.get_books_db().books.insert_one(book_entry)
+            return {"message": "Book archived successfully (OCR skipped)", "book_id": book_id}
+
+        else:
+            # Standard Processing Mode
+            # Save file locally for processing
+            file_path = os.path.join(UPLOAD_FOLDER, f"{book_id}_{file.filename}")
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+                
+            # Create DB entry
+            book_entry = {
+                "_id": book_id,
+                "filename": file.filename,
+                "status": "processing",
+                "uploaded_at": str(datetime.now())
+            }
+            await db.get_books_db().books.insert_one(book_entry)
+            
+            # Trigger background task
+            background_tasks.add_task(process_book_background, file_path, file.filename, book_id)
+            
+            return {"message": "Book uploaded and processing started", "book_id": book_id}
         
     except Exception as e:
         print(f"Error uploading book: {e}")
@@ -308,4 +335,26 @@ async def download_all_books():
             headers={"Content-Disposition": "attachment; filename=all_tulu_books.txt"}
         )
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/books/{book_id}/download")
+async def download_archived_book(book_id: str):
+    try:
+        book = await db.get_books_db().books.find_one({"_id": book_id})
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found")
+            
+        if book.get("status") != "archived" or "gridfs_id" not in book:
+             raise HTTPException(status_code=400, detail="This book is not archived or missing file")
+
+        fs = AsyncIOMotorGridFSBucket(db.get_books_db())
+        grid_out = await fs.open_download_stream(ObjectId(book["gridfs_id"]))
+        
+        return StreamingResponse(
+            grid_out,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={book['filename']}"}
+        )
+    except Exception as e:
+        print(f"Error downloading book: {e}")
         raise HTTPException(status_code=500, detail=str(e))

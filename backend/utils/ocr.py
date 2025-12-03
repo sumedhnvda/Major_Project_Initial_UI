@@ -11,7 +11,7 @@ from typing import Tuple
 LANG = "kan+eng"            # tesseract languages
 DPI = 150                   # lower DPI reduces memory & CPU, but may lower OCR accuracy
 POPPLER_PATH = None         # e.g. r"C:\path\to\poppler\bin" on Windows or None
-MAX_PAGE_WORKERS = 4
+MAX_PAGE_WORKERS = 1
 # ----------------------------------------
 
 def ocr_page_worker(args: Tuple[str, int, int, str, str]) -> Tuple[int, bool, str]:
