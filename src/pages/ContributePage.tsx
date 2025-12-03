@@ -40,7 +40,7 @@ const ContributePage = () => {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get('https://saraswati-b52q.onrender.com/api/books');
+            const response = await axios.get('https://major-project-initial-ui.onrender.com/api/books');
             setExistingBooks(response.data);
         } catch (error) {
             console.error('Error fetching books:', error);
@@ -72,7 +72,7 @@ const ContributePage = () => {
         }
 
         try {
-            await axios.post(`https://saraswati-b52q.onrender.com/api/submit`, payload);
+            await axios.post(`https://major-project-initial-ui.onrender.com/api/submit`, payload);
             setStatus({ type: 'success', message: 'Successfully submitted entry!' });
             setInstruction('');
             setResponse('');
@@ -121,7 +121,7 @@ const ContributePage = () => {
         formData.append('file', uploadFile);
 
         try {
-            const response = await axios.post(`https://saraswati-b52q.onrender.com/api/upload`, formData, {
+            const response = await axios.post(`https://major-project-initial-ui.onrender.com/api/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -168,7 +168,7 @@ const ContributePage = () => {
         formData.append('file', bookFile);
 
         try {
-            await axios.post(`https://saraswati-b52q.onrender.com/api/books/upload`, formData, {
+            await axios.post(`https://major-project-initial-ui.onrender.com/api/books/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

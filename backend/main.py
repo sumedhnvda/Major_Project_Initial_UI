@@ -41,11 +41,7 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # CORS Setup
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://saraswati.sumedhnavuda.com/",
-    "https://saraswati.sumedhnavuda.com"
+    "*"
 ]
 
 app.add_middleware(
