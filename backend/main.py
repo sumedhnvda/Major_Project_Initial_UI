@@ -37,6 +37,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 # CORS Setup
 origins = [
     "http://localhost:5173",
@@ -52,9 +55,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-from fastapi.staticfiles import StaticFiles
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Endpoints
 
@@ -153,9 +153,6 @@ async def get_data():
         raise HTTPException(status_code=500, detail=str(e))
 
 # Book Upload & Processing
-UPLOAD_FOLDER = "uploads"
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def process_book_background(file_path: str, filename: str, book_id: str):
     ocr_output_path = os.path.join(UPLOAD_FOLDER, f"{book_id}_ocr.txt")
